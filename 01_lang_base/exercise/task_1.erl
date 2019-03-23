@@ -1,13 +1,13 @@
 -module(task_1).
 
 -export([is_in_range/3]).
-
 -include_lib("eunit/include/eunit.hrl").
 
 
 %% Check is Val in range [From, To], both edges included
 is_in_range(Val, Left, Right) ->
-    false.
+    Val >= Left and Val =< Right.
+%%    false.
 
 is_in_range_test() ->
     ?assertEqual(true, is_in_range(5, 2, 10)),
