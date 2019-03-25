@@ -6,7 +6,7 @@
 
 %% Check is Val in range [From, To], both edges included
 is_in_range(Val, Left, Right) ->
-    Val >= Left and Val =< Right.
+    Val >= Left andalso Val =< Right.
 %%    false.
 
 is_in_range_test() ->
