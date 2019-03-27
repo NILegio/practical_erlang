@@ -7,8 +7,18 @@
 
 %% implement lists:dropwhile/2
 %% http://www.erlang.org/doc/man/lists.html#dropwhile-2
+%%dropwhile(Pred, List) -> dropwhile(Pred, List, []).
 dropwhile(Pred, List) ->
-    List.
+    case List of
+        [] -> List;
+        [Char|Tail] ->
+        case Pred(Char) of
+            true -> dropwhile(Pred, Tail);
+            false -> List
+            end
+    end.
+
+%%    List.
 
 
 dropwhile_test() ->
@@ -24,9 +34,15 @@ dropwhile_test() ->
 
 %% implement lists:takewhile/2
 %% http://www.erlang.org/doc/man/lists.html#takewhile-2
-takewhile(Pred, List) ->
-    List.
-
+takewhile(Pred, List)->
+    case List of
+        [] -> [];
+        [Char|Tail]->
+            case Pred(Char) of
+                true -> [Char|takewhile(Pred, Tail)]; % работает потому возвращается список в котором вызывается функция,
+                false -> []
+            end
+    end.
 
 takewhile_test() ->
     F = fun(Val) -> Val =:= 32 end,
