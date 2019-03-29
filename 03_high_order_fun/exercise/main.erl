@@ -60,7 +60,17 @@ sample_champ() ->
 
 
 get_stat(Champ) ->
-    {0, 0, 0.0, 0.9}.
+  F1 = fun({team,_, Team}, {NumTeams, NumPlayers, AvgAge, AvgRating}) ->
+    {NumTeams + 1,
+      lists:foldl(fun ({player,_, _, _,_}, NumPlayers1)-> NumPlayers1+1 end, NumPlayers, Team),
+      lists:foldl(fun ({player,_, Age, _,_}, AvgAge1)-> AvgAge1+Age end, AvgAge, Team),
+      lists:foldl(fun({player,_, _, Rating,_}, AvgRating1)-> AvgRating1+Rating end, AvgRating, Team)
+    } end,
+  Raw = lists:foldl(F1,{0, 0, 0, 0},Champ),
+  F = fun({NumTeams, NumPlayers, AvgAge, AvgRating})->
+    {NumTeams, NumPlayers, AvgAge/NumPlayers, AvgRating/NumPlayers} end,
+  F(Raw).
+%%    {0, 0, 0.0, 0.9}.
 
 
 get_stat_test() ->
@@ -69,7 +79,10 @@ get_stat_test() ->
 
 
 filter_sick_players(Champ) ->
-    Champ.
+  Raw = lists:map(fun({team, Name, Team})->
+    {team, Name, lists:filter(fun({_, _, _,_, Health})-> Health >= 50 end, Team)} end, Champ), % код для филтрации списка внутри списка
+  lists:filter(fun({_, _, Team})->               length(Team) >= 5  end, Raw).
+% влодение списки соспостовление не работают. Спросить можно ли фильтрмап сначала обработать а потом отфильтровать
 
 
 filter_sick_players_test() ->
@@ -104,8 +117,8 @@ filter_sick_players_test() ->
     ok.
 
 
-make_pairs(Team1, Team2) ->
-    [].
+make_pairs({_, NameTeam1, Players1}, {_, NameTeam2, Players2}) ->
+    [{Name1, Name2}|| {_,Name1,_,Rating1,_}<-Players1, {_,Name2,_,Rating2,_}<-Players2, Rating1+Rating2 > 600].% работа чисто со списками
 
 
 make_pairs_test() ->
