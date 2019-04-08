@@ -37,20 +37,54 @@ init() ->
 
 
 add_idea(Id, Title, Author, Rating, Description) ->
-    ok.
+    ets:insert(great_ideas_table, [#idea{id = Id, title = Title, author = Author,
+              rating = Rating, description = Description}]).
 
 
 get_idea(Id) ->
-    not_found.
+  case ets:lookup(great_ideas_table, Id) of
+    [State] -> {ok, State};
+    [] -> not_found
+  end.
 
 
-ideas_by_author(Author) ->
-    [].
+
+ideas_by_author(LAuthor) ->
+    Ms = ets:fun2ms(fun(#idea{author = Author} = Think)
+      when Author =:= LAuthor -> Think end),
+    ets:select(great_ideas_table, Ms).
 
 
-ideas_by_rating(Rating) ->
-    [].
+ideas_by_rating(LRating) ->
+  Ms = ets:fun2ms(fun(#idea{rating = Rating} = Think)
+    when Rating >= LRating -> Think end),
+  ets:select(great_ideas_table, Ms).
 
 
 get_authors() ->
-    [].
+  Ms = ets:fun2ms(fun(#idea{author = Author}) -> Author end),
+  Temp = ets:select(great_ideas_table, Ms),
+  F = fun(Name, Acc) ->
+      case maps:find(Name, Acc) of
+        {ok, Values} -> Acc#{Name :=Values +1};
+        error -> Acc#{Name => 1}
+      end
+    end,
+  List = maps:to_list(lists:foldl(F, maps:new(), Temp)),
+  lists:sort(fun({A, Q},{B, Q})-> A<B;
+  ({_, Q}, {_, W})-> Q>W end, List). %еще надо отсортировать
+
+
+%%  get_authors([], 0).
+%%get_authors(Acc, Flag) when Flag =/= '$end_of_table'->
+%%  case Acc of
+%%    []-> First = ets:first(great_ideas_table),
+%%         [{idea,_,_, Author, _, _}] = ets:lookup(great_ideas_table, First),
+%%         get_authors([{Author, 1}], First);
+%%    AccT -> Next = ets:next(great_ideas_table, Flag),
+%%      Next
+%%%%      [{idea,_,_, Author, _, _}] = ets:lookup(great_ideas_table, Next),
+%%%%    get_authors([{Author, 1}|AccT], Next)
+%%
+%%  end.
+
