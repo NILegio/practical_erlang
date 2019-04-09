@@ -26,7 +26,8 @@ parse(Str, Data) when is_binary(Str) ->
 parse_error1(Str, Data) when is_binary(Str) ->
 %%  не работает через фодл, так как бинари меняется
     Data1 = maps:fold(fun(K,V, Acc)->
-    K1 = iolist_to_binary([<<"{{">>, K, <<"}}">>]), Acc#{ K1 => V } end, #{}, Data),
+    K1 = iolist_to_binary([<<"{{">>, K, <<"}}">>]),
+      Acc#{ K1 => V } end, #{}, Data),
     maps:fold(fun(K,V, Bin)-> binary:replace(Bin, K, V) end, Str, Data1).
 %%    binary:split(In, [<<"{{">>,<<"}}">>], [global]).
 
