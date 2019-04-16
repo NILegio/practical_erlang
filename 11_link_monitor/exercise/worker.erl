@@ -1,13 +1,13 @@
 -module(worker).
--export([worker1/3, parse_file/1]).
-%%-export([worker1/2, parse_file/1]).
+-export([worker1/2, parse_file/1]).
 
-%%worker1(ReducerPid, File)->
-worker1(ReducerPid, Ref, File)->
+
+
+worker1(ReducerPid, File)->
   io:format("worker ~p~n", [self()]),
   Res = parse_file(File),
-  ReducerPid ! {data, Ref, Res}, ok.
-%%  ReducerPid ! {data, Res}, ok.
+  ReducerPid ! {data, Res}, ok.
+
 
 parse_file(File)->
   {ok, Content} = file:read_file(File),
