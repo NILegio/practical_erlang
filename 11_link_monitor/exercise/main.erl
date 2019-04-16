@@ -7,16 +7,15 @@ parse(Files) ->
     io:format("reducer ~p ~n", [self()]),
     Wait =
         lists:map(fun (File)->
-        WRef = make_ref(),
-        WPid = spawn(worker, worker1, [self(), WRef, File]),
-            MRef = erlang:monitor(process, WPid), {MRef, WRef, WPid, File} end, Files),
+        WPid = spawn(worker, worker1, [self(), File]),
+            MRef = erlang:monitor(process, WPid), {MRef, WPid, File} end, Files),
     io:format("Wait:~p~n", [Wait]),
     loop(Wait, {#{}, #{}}).
 
 loop([],  Temp)-> Temp;
-loop([{MRef, Ref, _, File}|Wait], {Acc, ErrorAcc})->
+loop([{MRef, _, File}|Wait], {Acc, ErrorAcc})->
     receive
-        {data, Ref, Res} -> loop(Wait, {aggregate(Res, Acc), ErrorAcc});
+        {data, Res} -> loop(Wait, {aggregate(Res, Acc), ErrorAcc});
         {'DOWN', MRef, process, Pid, {TrueReason, _}} ->
             io:format("Worker ~p dont work~n", [Pid]),
             loop(Wait, {Acc, ErrorAcc#{File=>TrueReason}})
