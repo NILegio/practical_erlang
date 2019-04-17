@@ -13,12 +13,17 @@ parse(Files) ->
     loop(Wait, {#{}, #{}}).
 
 loop([],  Temp)-> Temp;
-loop([{MRef, _, File}|Wait], {Acc, ErrorAcc})->
+loop(Wait, {Acc, ErrorAcc})->
+    [{MRef, _, File}|Tail] = Wait,
     receive
         {data, Res} -> loop(Wait, {aggregate(Res, Acc), ErrorAcc});
-        {'DOWN', MRef, process, Pid, {TrueReason, _}} ->
-            io:format("Worker ~p dont work~n", [Pid]),
-            loop(Wait, {Acc, ErrorAcc#{File=>TrueReason}})
+        {'DOWN', MRef, process, Pid, Reason} ->
+            case Reason of
+                normal -> loop(Tail, {Acc, ErrorAcc});
+                {TrueReason, _} -> io:format("Worker ~p dont work~n", [Pid]),
+                    loop(Tail, {Acc, ErrorAcc#{File=>TrueReason}})
+
+            end
     after
         1000 -> {error, not_reply}
     end.
