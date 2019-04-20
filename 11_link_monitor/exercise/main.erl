@@ -20,8 +20,8 @@ loop(Wait, {Acc, ErrorAcc})->
         {'DOWN', MRef, process, Pid, Reason} ->
             case Reason of
                 normal -> loop(Tail, {Acc, ErrorAcc});
-                {TrueReason, _} -> io:format("Worker ~p dont work~n", [Pid]),
-                    loop(Tail, {Acc, ErrorAcc#{File=>TrueReason}})
+                Reason -> io:format("Worker ~p dont work~n", [Pid]),
+                    loop(Tail, {Acc, ErrorAcc#{File=>Reason}})
 
             end
     after

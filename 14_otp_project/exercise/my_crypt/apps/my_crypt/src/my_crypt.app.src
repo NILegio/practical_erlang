@@ -1,0 +1,15 @@
+{application, my_crypt,
+ [{description, "my_first_cript"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {my_crypt_app, []}},
+  {applications,
+   [kernel,
+    stdlib %сюда добавляем разные библиотеки
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
