@@ -53,7 +53,7 @@ init([]) ->
   {ok, State}.
 
 handle_call({get_key}, _Form, State)->
-  [Key] = maps:values(State),
+  Key = maps:get(key, State),
   {reply, Key, State};
 
 handle_call({encode, Str}, _Form, State)->

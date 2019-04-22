@@ -7,7 +7,11 @@
    [kernel,
     stdlib %сюда добавляем разные библиотеки
    ]},
-  {env,[]},
+  {env,[
+   {crypt_key, <<"GVXCLF4nJ5qtcAHQHmx">>},
+   {hash_size, 8},
+   {seed, {48, 1516, 2342}}
+  ]},
   {modules, []},
 
   {licenses, ["Apache 2.0"]},
