@@ -12,9 +12,13 @@ get_main(URL, Map)->
     case list_to_tuple(URL) of
         {_} -> {error, invalid_protocol};
         {_, <<>>} -> {error, invalid_domain};
-        %ошибка, если домен не закончивается на /
-        {Protocol, URL1} ->  {Domain, Path}= list_to_tuple(binary:split(URL1, <<"/">>)),
-            get_query(binary:split(Path, <<"?">>), Map#{protocol => Protocol, domain => Domain})
+        {Protocol, Url1} -> get_domain(binary:split(Url1, <<"/">>), Map#{protocol => Protocol})
+    end.
+
+ get_domain(Url, Map)->
+        case list_to_tuple(Url) of
+            {Domain} -> {ok, Map#{domain => Domain}};
+            {Domain, Path} -> get_query(binary:split(Path, <<"?">>), Map#{domain => Domain})
     end.
 
 
